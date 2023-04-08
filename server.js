@@ -4,7 +4,7 @@ const path = require("path");
 const express = require("express");
 const helmet = require("helmet");
 const passport = require("passport");
-const { Srategy } = require("passport-google-oauth20");
+const { Strategy } = require("passport-google-oauth20");
 
 require("dotenv").config();
 
@@ -14,13 +14,13 @@ const config = {
   CLIENT_SECRET: process.env.CLIENT_SECRET,
 };
 const AUTH_OPTIONS = {
-  callbackUrl: "/auth/google/callback",
-  clientId: config.CLIENT_ID,
+  callbackURL: "/auth/google/callback",
+  clientID: config.CLIENT_ID,
   clientSecret: config.CLIENT_SECRET,
 };
 
-function verifyCallback(accessToken, refreshToken, profile, profile, done) {
-  console.log(`Google Profile: ${profile}`);
+function verifyCallback(accessToken, refreshToken, profile, done) {
+  console.log(`Google Profile:`, profile);
   done(null, profile);
 }
 
@@ -42,9 +42,29 @@ function checkLoggedIn(req, res, next) {
 app.get("/secret", checkLoggedIn, (req, res) => {
   return res.send("Your personal secuirty value is 42!");
 });
+app.get("/failure", (req, res) => {
+  res.send("Fail to login!");
+});
 
-app.get("/auth/google", (req, res) => {});
-app.get("/auth/google/callback", (req, res) => {});
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["email"],
+  }),
+  (req, res) => {}
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/failure",
+    successRedirect: "/",
+    session: false,
+  }),
+  (req, res) => {
+    console.log("google called us back");
+  }
+);
 app.get("/auth/logout", (req, res) => {});
 
 app.get("/", (req, res) => {
