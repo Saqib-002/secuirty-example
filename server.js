@@ -42,16 +42,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser((user, done) => {
-  console.log("s", user.id);
   done(null, user.id);
 });
 passport.deserializeUser((obj, done) => {
-  console.log("d", obj);
   done(null, obj);
 });
 
 function checkLoggedIn(req, res, next) {
-  const isLoggedIn = true;
+  console.log(req.user);
+  const isLoggedIn = req.isAuthenticated() && req.user;
   if (!isLoggedIn)
     return res.status(401).json({
       error: "You must log in!",
