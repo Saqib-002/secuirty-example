@@ -83,7 +83,10 @@ app.get(
     console.log("google called us back");
   }
 );
-app.get("/auth/logout", (req, res) => {});
+app.get("/auth/logout", (req, res) => {
+  req.logout();
+  return res.redirect("/");
+});
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
