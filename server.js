@@ -39,6 +39,16 @@ app.use(
   })
 );
 app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  console.log("s", user.id);
+  done(null, user.id);
+});
+passport.deserializeUser((obj, done) => {
+  console.log("d", obj);
+  done(null, obj);
+});
 
 function checkLoggedIn(req, res, next) {
   const isLoggedIn = true;
@@ -69,7 +79,6 @@ app.get(
   passport.authenticate("google", {
     failureRedirect: "/failure",
     successRedirect: "/",
-    session: false,
   }),
   (req, res) => {
     console.log("google called us back");
